@@ -33,7 +33,9 @@ return {
                 null = true
             })}, {"phone_number", types.varchar({
                 null = true
-            })}, {"email", types.varchar()}, {"address1", types.varchar({
+            })}, {"email", types.varchar({
+                null = true
+            })}, {"address1", types.varchar({
                 null = true
             })}, {"address2", types.varchar({
                 null = true
@@ -78,6 +80,8 @@ return {
                 null = true
             })}, {"email", types.varchar({
                 null = true
-            })}, {"webiste", types.varchar}, {"created_at", types.time}, {"updated_at", types.time}, "PRIMARY KEY (id)"})
+            })}, {"website", types.varchar({
+                null = true
+            })}, {"created_at", types.time}, {"updated_at", types.time}, "PRIMARY KEY (id)"})
     end
 }

@@ -26,6 +26,10 @@ app:match("register", "/register", respond_to({
         local email = tostring(self.params.email or ""):lower()
         local password = self.params.password or ""
         local confirm_password = self.params.confirm_password or ""
+        local first_name = tostring(self.params.first_name or "")
+        local last_name = tostring(self.params.last_name or "")
+        local phone_number = tostring(self.params.phone or "")
+        local title = tostring(self.params.title or "")
 
         -- Validate required fields
         if email == "" or password == "" then
@@ -37,6 +41,20 @@ app:match("register", "/register", respond_to({
                 render = "register"
             }
         end
+
+        -- Validate name fields
+        if first_name == "" or last_name == "" then
+            self.error_message = "First name and last name are required"
+            self.csrf_token = csrf.generate_token(self)
+            self.title = "User Registration"
+            return {
+                status = 400,
+                render = "register"
+            }
+        end
+
+        -- Strip the phone number to digits only
+        phone_number = phone_number:gsub("%D", "")
 
         -- Check password confirmation
         if password ~= confirm_password then
@@ -66,7 +84,11 @@ app:match("register", "/register", respond_to({
         local hash = bcrypt.digest(password, 12)
         local user = User:create({
             email = email,
-            password_hash = hash
+            password_hash = hash,
+            first_name = first_name,
+            last_name = last_name,
+            phone_number = phone_number,
+            title = title
         })
 
         -- Log user in

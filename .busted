@@ -1,0 +1,10 @@
+-- .busted
+-- Busted configuration for running tests
+return {
+    default = {
+        verbose = true,
+        coverage = false,
+        ROOT = {"./spec/"},
+        pattern = "_spec%.lua$"
+    }
+}

@@ -50,3 +50,19 @@ config("production", {
         database = pg_db
     }
 })
+
+-- Test configuration
+config("test", {
+    server = "nginx",
+    code_cache = "off",
+    num_workers = 1,
+    port = 8080,
+    session_name = "autoshop_session_test",
+    secret = "test-secret-key-do-not-use-in-production",
+    postgres = {
+        host = pg_host or "127.0.0.1",
+        user = pg_user or "postgres",
+        password = pg_pass or "postgres",
+        database = pg_db and (pg_db .. "_test") or "open_auto_shop_test"
+    }
+})

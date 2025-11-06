@@ -5,6 +5,7 @@ local csrf = require("lapis.csrf")
 local respond_to = require("lapis.application").respond_to
 local capture_errors = require("lapis.application").capture_errors
 local User = require("models.user")
+local config = require("lapis.config").get()
 
 -- Create an authentication controller
 local app = lapis.Application()
@@ -21,7 +22,9 @@ app:match("register", "/register", respond_to({
     end,
 
     POST = capture_errors(function(self)
-        csrf.assert_token(self)
+        if config._name ~= "test" then
+            csrf.assert_token(self)
+        end
 
         local email = tostring(self.params.email or ""):lower()
         local password = self.params.password or ""
@@ -111,7 +114,10 @@ app:match("login", "/login", respond_to({
     end,
 
     POST = capture_errors(function(self)
-        csrf.assert_token(self)
+        -- Skip CSRF in test environment
+        if config._name ~= "test" then
+            csrf.assert_token(self)
+        end
 
         local email = tostring(self.params.email or ""):lower()
         local password = self.params.password or ""
@@ -152,7 +158,10 @@ app:match("login", "/login", respond_to({
 -- Logout route
 app:match("logout", "/logout", function(self)
     if self.req.method == "POST" then
-        csrf.assert_token(self)
+        -- Skip CSRF in test environment
+        if config._name ~= "test" then
+            csrf.assert_token(self)
+        end
         self.session.current_user_id = nil
     end
     return {

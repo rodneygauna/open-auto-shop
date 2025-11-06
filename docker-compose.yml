@@ -32,11 +32,13 @@ services:
       postgres:
         condition: service_healthy
     volumes:
-      - ./app:/app
+      - ./app:/app/app
+      - ./spec:/app/spec
+      - ./.busted:/app/.busted
     networks:
       - autoshop-lapis-network
     entrypoint: ["/bin/bash", "-c"]
-    command: ["/usr/local/openresty/luajit/bin/lapis migrate && /usr/local/openresty/luajit/bin/lapis server development"]
+    command: ["cd /app/app && /usr/local/openresty/luajit/bin/lapis migrate && /usr/local/openresty/luajit/bin/lapis server development"]
 
 volumes:
   pgdata:

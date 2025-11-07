@@ -33,6 +33,7 @@ app:match("register", "/register", respond_to({
         local last_name = tostring(self.params.last_name or "")
         local phone_number = tostring(self.params.phone or "")
         local title = tostring(self.params.title or "")
+        local is_admin
 
         -- Validate required fields
         if email == "" or password == "" then
@@ -83,6 +84,14 @@ app:match("register", "/register", respond_to({
             }
         end
 
+        -- Check if this is the first user and make them an admin
+        local user_count = User:count()
+        if user_count == 0 then
+            is_admin = true
+        else
+            is_admin = false
+        end
+
         -- Create new user
         local hash = bcrypt.digest(password, 12)
         local user = User:create({
@@ -91,7 +100,8 @@ app:match("register", "/register", respond_to({
             first_name = first_name,
             last_name = last_name,
             phone_number = phone_number,
-            title = title
+            title = title,
+            is_admin = is_admin
         })
 
         -- Log user in

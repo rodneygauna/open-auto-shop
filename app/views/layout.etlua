@@ -32,9 +32,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <% if current_user then %>
-              <li class="nav-item">
-                <a class="nav-link" href="/businesses">My Businesses</a>
-              </li>
+              <% if current_user.is_admin == true then %>
+                <li class="nav-item">
+                  <a class="nav-link" href="/settings">Settings</a>
+                </li>
+              <% end %>
               <li class="nav-item">
                 <form method="POST" action="/logout" class="d-inline">
                   <input type="hidden" name="csrf_token" value="<%= csrf_token %>" />

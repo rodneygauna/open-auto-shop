@@ -1,0 +1,26 @@
+<h1 class="h4 mb-3">Business Details</h1>
+
+<h2 class="h5 mt-4">Name</h2>
+<p><%= business.name %></p>
+
+<h2 class="h5 mt-4">Address</h2>
+<p>
+  <%= business.address1 %><br />
+  <% if business.address2 and business.address2 ~= "" then %>
+    <%= business.address2 %><br />
+  <% end %>
+  <%= business.city %>, <%= business.state %> <%= business.zip_code %>
+</p>
+
+<h2 class="h5 mt-4">Contact Information</h2>
+<p>
+  <% if business.phone_number and business.phone_number ~= "" then %>
+    Phone: <%= business.phone_number %><br />
+  <% end %>
+  <% if business.email and business.email ~= "" then %>
+    Email: <%= business.email %><br />
+  <% end %>
+  <% if business.website and business.website ~= "" then %>
+    Website: <a href="<%= business.website %>"><%= business.website %></a>
+  <% end %>
+</p>

@@ -2,7 +2,6 @@
 local lapis = require("lapis")
 local csrf = require("lapis.csrf")
 local User = require("models.user")
-local Auth = require("controllers.auth")
 
 -- Create the main application
 local app = lapis.Application()
@@ -21,7 +20,12 @@ app:before_filter(function(self)
 end)
 
 -- Include auth routes
+local Auth = require("controllers.auth")
 app:include(Auth)
+
+-- Include business routes
+local Business = require("controllers.business")
+app:include(Business)
 
 -- Define the index route
 app:match("index", "/", function(self)

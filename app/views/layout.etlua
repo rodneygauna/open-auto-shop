@@ -14,13 +14,59 @@
     />
   </head>
   <body class="bg-light">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white mb-2 shadow-sm container-fluid">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Open Auto Shop</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <% if current_user then %>
+              <li class="nav-item">
+                <a class="nav-link" href="/businesses">My Businesses</a>
+              </li>
+              <li class="nav-item">
+                <form method="POST" action="/logout" class="d-inline">
+                  <input type="hidden" name="csrf_token" value="<%= csrf_token %>" />
+                  <button type="submit" class="btn btn-link nav-link" style="text-decoration: none;">Logout</button>
+                </form>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/register">Register</a>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Container -->
     <div class="container py-5">
+      <!-- Flash Messages -->
       <% if error_message then %>
         <div class="alert alert-danger" role="alert">
           <%= error_message %>
         </div>
       <% end %>
-
+      <% if success_message then %>
+        <div class="alert alert-success" role="alert">
+          <%= success_message %>
+        </div>
+      <% end %>
+      <!-- Main Content -->
       <%- content_for("inner") %>
     </div>
 

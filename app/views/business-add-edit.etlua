@@ -1,0 +1,110 @@
+<h1 class="h4 mb-3"><%= business and "Edit Business" or "Add Business" %></h1>
+<form method="POST" action="<%= business and ("/business/" .. business.id .. "/edit") or "/business/create" %>">
+  <input type="hidden" name="csrf_token" value="<%= csrf_token %>" />
+
+  <div class="mb-3">
+    <label for="name" class="form-label">Business Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="name"
+      name="name"
+      value="<%= business and business.name or "" %>"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="address1" class="form-label">Address 1</label>
+    <input
+      type="text"
+      class="form-control"
+      id="address1"
+      name="address1"
+      value="<%= business and business.address1 or "" %>"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="address2" class="form-label">Address 2</label>
+    <input
+      type="text"
+      class="form-control"
+      id="address2"
+      name="address2"
+      value="<%= business and business.address2 or "" %>"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="city" class="form-label">City</label>
+    <input
+      type="text"
+      class="form-control"
+      id="city"
+      name="city"
+      value="<%= business and business.city or "" %>"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="state" class="form-label">State</label>
+    <input
+      type="text"
+      class="form-control"
+      id="state"
+      name="state"
+      value="<%= business and business.state or "" %>"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="zip_code" class="form-label">Zip Code</label>
+    <input
+      type="text"
+      class="form-control"
+      id="zip_code"
+      name="zip_code"
+      value="<%= business and business.zip_code or "" %>"
+      required
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="phone_number" class="form-label">Phone Number</label>
+    <input
+      type="tel"
+      class="form-control"
+      id="phone_number"
+      name="phone_number"
+      value="<%= business and business.phone_number or "" %>"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for=email" class=form-label">Email</label>
+    <input
+        type=email
+        class=form-control
+        id=email
+        name=email
+        value="<%= business and business.email or "" %>"
+        required />
+  </div>
+
+  <div class="mb-3">
+    <label for="website" class="form-label">Website</label>
+    <input
+        type="url"
+        class="form-control"
+        id="website"
+        name="website"
+        value="<%= business and business.website or "" %>"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary"><%= business and "Update Business" or "Add Business" %></button>
+</form>

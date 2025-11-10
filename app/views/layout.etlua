@@ -61,7 +61,7 @@
       </div>
     </nav>
     <!-- Main Container -->
-    <div class="container py-5">
+    <div class="container py-2">
       <!-- Flash Messages -->
       <% if error_message then %>
         <div class="alert alert-danger" role="alert">

@@ -12,6 +12,9 @@ local app = lapis.Application()
 -- Settings route
 app:match("settings", "/settings", respond_to({
     GET = function(self)
+        -- Total user counts
+        local user_count = User:count()
+        self.user_count = user_count
         local business = Business:find(1)
         if business then
             self.business = business

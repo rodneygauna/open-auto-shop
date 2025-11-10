@@ -16,7 +16,7 @@
   </div>
   <div class="col">
     <div class="card mb-4">
-      <div class="card-header">User Management</div>
+      <div class="card-header">User Management <% if user_count then %> (<%= user_count %>)<% end %></div>
       <div class="card-body">
         <a href="/users" class="btn btn-primary">Manage Users</a>
       </div>

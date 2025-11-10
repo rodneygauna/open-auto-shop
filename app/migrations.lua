@@ -55,6 +55,8 @@ return {
                 null = true
             })}, {"license_plate", types.varchar({
                 null = true
+            })}, {"color", types.varchar({
+                null = true
             })}, {"created_at", types.time}, {"updated_at", types.time}, "PRIMARY KEY (id)"})
     end,
     -- Migration to create 'customers_vehicles' join table

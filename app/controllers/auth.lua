@@ -17,7 +17,7 @@ app:match("register", "/register", respond_to({
         self.title = "User Registration"
         self.error_message = self.params.error_message
         return {
-            render = "register"
+            render = "auth/register"
         }
     end,
 
@@ -42,7 +42,7 @@ app:match("register", "/register", respond_to({
             self.title = "User Registration"
             return {
                 status = 400,
-                render = "register"
+                render = "auth/register"
             }
         end
 
@@ -53,7 +53,7 @@ app:match("register", "/register", respond_to({
             self.title = "User Registration"
             return {
                 status = 400,
-                render = "register"
+                render = "auth/register"
             }
         end
 
@@ -67,7 +67,7 @@ app:match("register", "/register", respond_to({
             self.title = "User Registration"
             return {
                 status = 400,
-                render = "register"
+                render = "auth/register"
             }
         end
 
@@ -80,7 +80,7 @@ app:match("register", "/register", respond_to({
             self.title = "User Registration"
             return {
                 status = 400,
-                render = "register"
+                render = "auth/register"
             }
         end
 
@@ -119,7 +119,7 @@ app:match("login", "/login", respond_to({
         self.title = "Login"
         self.error_message = self.params.error_message
         return {
-            render = "login"
+            render = "auth/login"
         }
     end,
 
@@ -139,7 +139,7 @@ app:match("login", "/login", respond_to({
             self.title = "Login"
             return {
                 status = 400,
-                render = "login"
+                render = "auth/login"
             }
         end
 
@@ -153,7 +153,7 @@ app:match("login", "/login", respond_to({
             self.title = "Login"
             return {
                 status = 400,
-                render = "login"
+                render = "auth/login"
             }
         end
 

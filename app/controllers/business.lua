@@ -16,7 +16,7 @@ app:match("create_business", "/business/create", respond_to({
         self.title = "Create Business"
         self.error_message = self.params.error_message
         return {
-            render = "business-add-edit"
+            render = "business/add-edit"
         }
     end,
 
@@ -40,7 +40,7 @@ app:match("create_business", "/business/create", respond_to({
             self.title = "Create Business"
             return {
                 status = 400,
-                render = "business-add-edit"
+                render = "business/add-edit"
             }
         end
 
@@ -82,7 +82,7 @@ app:match("edit_business", "/business/:id/edit", respond_to({
         self.csrf_token = csrf.generate_token(self)
         self.title = "Edit Business"
         return {
-            render = "business-add-edit"
+            render = "business/add-edit"
         }
     end,
 
@@ -115,7 +115,7 @@ app:match("edit_business", "/business/:id/edit", respond_to({
             self.business = business
             return {
                 status = 400,
-                render = "business-add-edit"
+                render = "business/add-edit"
             }
         end
 
@@ -156,7 +156,7 @@ app:match("business_detail", "/business/:id", respond_to({
         self.business = business
         self.title = business.name
         return {
-            render = "business-show"
+            render = "business/show"
         }
     end
 }))

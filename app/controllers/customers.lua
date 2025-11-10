@@ -22,7 +22,7 @@ app:match("customers", "/customers", respond_to({
         self.customers = customers
         self.title = "Customers"
         return {
-            render = "customers-index"
+            render = "customers/index"
         }
     end
 }))
@@ -39,7 +39,7 @@ app:match("create_customer", "/customers/create", respond_to({
         self.title = "Create Customer"
         self.error_message = self.params.error_message
         return {
-            render = "customers-add-edit"
+            render = "customers/add-edit"
         }
     end,
 
@@ -71,7 +71,7 @@ app:match("create_customer", "/customers/create", respond_to({
             self.title = "Create Customer"
             return {
                 status = 400,
-                render = "customers-add-edit"
+                render = "customers/add-edit"
             }
         end
 
@@ -117,7 +117,7 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
         self.csrf_token = csrf.generate_token(self)
         self.title = "Edit Customer"
         return {
-            render = "customers-add-edit"
+            render = "customers/add-edit"
         }
     end,
 
@@ -158,7 +158,7 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
             self.customer = customer
             return {
                 status = 400,
-                render = "customers-add-edit"
+                render = "customers/add-edit"
             }
         end
 
@@ -207,7 +207,7 @@ app:match("view_customer", "/customers/:id", respond_to({
         self.vehicles = vehicles
         self.title = "Customer Details"
         return {
-            render = "customers-show"
+            render = "customers/show"
         }
     end
 }))

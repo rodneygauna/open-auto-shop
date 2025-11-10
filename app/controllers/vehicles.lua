@@ -26,7 +26,7 @@ app:match("create_vehicle", "/vehicles/create", respond_to({
         self.title = "Create Vehicle"
         self.error_message = self.params.error_message
         return {
-            render = "vehicles-add-edit"
+            render = "vehicles/add-edit"
         }
     end,
 
@@ -57,7 +57,7 @@ app:match("create_vehicle", "/vehicles/create", respond_to({
             self.title = "Create Vehicle"
             return {
                 status = 400,
-                render = "vehicles-add-edit"
+                render = "vehicles/add-edit"
             }
         end
 
@@ -70,7 +70,7 @@ app:match("create_vehicle", "/vehicles/create", respond_to({
             self.title = "Create Vehicle"
             return {
                 status = 400,
-                render = "vehicles-add-edit"
+                render = "vehicles/add-edit"
             }
         end
 

@@ -27,7 +27,7 @@ app:match("settings", "/settings", respond_to({
         self.csrf_token = csrf.generate_token(self)
         self.title = "User Settings"
         return {
-            render = "settings"
+            render = "settings/index"
         }
     end
 }))

@@ -35,6 +35,10 @@ app:include(Settings)
 local Customers = require("controllers.customers")
 app:include(Customers)
 
+-- Include vehicles routes
+local Vehicles = require("controllers.vehicles")
+app:include(Vehicles)
+
 -- Define the index route
 app:match("index", "/", function(self)
     self.csrf_token = csrf.generate_token(self)

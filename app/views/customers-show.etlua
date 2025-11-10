@@ -1,4 +1,8 @@
 <h1 class="h4 mb-3">Customer Details</h1>
+<div class="mt-4">
+  <a href="/customers/<%= customer.id %>/edit" class="btn btn-secondary">Edit Customer</a>
+  <a href="/customers" class="btn btn-primary">Back to Customers</a>
+</div>
 
 <h2 class="h5 mt-4">Name</h2>
 <p>
@@ -42,7 +46,41 @@
   <% end %>
 </p>
 
-<div class="mt-4">
-  <a href="/customers/<%= customer.id %>/edit" class="btn btn-secondary">Edit Customer</a>
-  <a href="/customers" class="btn btn-primary">Back to Customers</a>
-</div>
+<!-- Vehicles Section -->
+<h2 class="h5 mt-4">Vehicles</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Make</th>
+      <th scope="col">Model</th>
+      <th scope="col">Year</th>
+      <th scope="col">VIN</th>
+      <th scope="col">License Plate</th>
+      <th scope="col">Color</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if #vehicles == 0 then %>
+      <tr>
+        <td colspan="8" class="text-center">No vehicles associated with this customer.</td>
+      </tr>
+    <% end %>
+    <% for _, vehicle in ipairs(vehicles) do %>
+      <tr>
+        <th scope="row"><%= vehicle.id %></th>
+        <td><%= vehicle.make %></td>
+        <td><%= vehicle.model %></td>
+        <td><%= vehicle.year %></td>
+        <td><%= vehicle.vin %></td>
+        <td><%= vehicle.license_plate %></td>
+        <td><%= vehicle.color %></td>
+        <td>
+          <div class="btn-group" role="group" aria-label="Actions">
+            <a href="/vehicles/<%= vehicle.id %>" class="btn btn-sm btn-primary text-white">View</a>
+            <a href="/vehicles/<%= vehicle.id %>/edit" class="btn btn-sm btn-outline-secondary">Edit</a>
+          </div>
+      </tr>
+    <% end %>
+  </tbody>

@@ -164,4 +164,27 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
     end
 }))
 
+-- View customer route
+app:match("view_customer", "/customers/:id", respond_to({
+    GET = function(self)
+        if not self.current_user then
+            return {
+                redirect_to = "/"
+            }
+        end
+        local customer = Customer:find(self.params.id)
+        if not customer then
+            return {
+                status = 404,
+                render = "404"
+            }
+        end
+        self.customer = customer
+        self.title = "Customer Details"
+        return {
+            render = "customers-show"
+        }
+    end
+}))
+
 return app

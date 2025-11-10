@@ -1,9 +1,10 @@
 -- app/controllers/customers.lua
 local lapis = require("lapis")
+local csrf = require("lapis.csrf")
 local respond_to = require("lapis.application").respond_to
 local capture_errors = require("lapis.application").capture_errors
 local Customer = require("models.customer")
-local User = require("models.user")
+local Vehicle = require("models.vehicle")
 
 -- Create a customers controller
 local app = lapis.Application()
@@ -34,35 +35,48 @@ app:match("create_customer", "/customers/create", respond_to({
                 redirect_to = "/"
             }
         end
+        self.csrf_token = csrf.generate_token(self)
         self.title = "Create Customer"
         self.error_message = self.params.error_message
         return {
             render = "customers-add-edit"
         }
     end,
-    POST = function(self)
+
+    POST = capture_errors(function(self)
         if not self.current_user then
             return {
                 redirect_to = "/"
             }
         end
-        local first_name = self.params.first_name
-        local middle_name = self.params.middle_name
-        local last_name = self.params.last_name
-        local suffix_name = self.params.suffix_name
-        local phone_number = self.params.phone_number
-        local email = self.params.email
-        local address1 = self.params.address1
-        local address2 = self.params.address2
-        local city = self.params.city
-        local state = self.params.state
-        local zip_code = self.params.zip_code
 
-        if not first_name or not last_name then
+        csrf.assert_token(self)
+
+        local first_name = tostring(self.params.first_name or "")
+        local middle_name = tostring(self.params.middle_name or "")
+        local last_name = tostring(self.params.last_name or "")
+        local suffix_name = tostring(self.params.suffix_name or "")
+        local phone_number = tostring(self.params.phone_number or "")
+        local email = tostring(self.params.email or "")
+        local address1 = tostring(self.params.address1 or "")
+        local address2 = tostring(self.params.address2 or "")
+        local city = tostring(self.params.city or "")
+        local state = tostring(self.params.state or "")
+        local zip_code = tostring(self.params.zip_code or "")
+
+        -- Validate required fields
+        if first_name == "" or last_name == "" then
+            self.error_message = "First name and last name are required"
+            self.csrf_token = csrf.generate_token(self)
+            self.title = "Create Customer"
             return {
-                redirect_to = "/customers/create?error_message=All+fields+are+required"
+                status = 400,
+                render = "customers-add-edit"
             }
         end
+
+        -- Strip the phone number to digits only
+        phone_number = phone_number:gsub("%D", "")
 
         local customer = Customer:create({
             first_name = first_name,
@@ -78,16 +92,10 @@ app:match("create_customer", "/customers/create", respond_to({
             zip_code = zip_code
         })
 
-        if customer then
-            return {
-                redirect_to = "/customers"
-            }
-        else
-            return {
-                redirect_to = "/customers/create?error_message=Failed+to+create+customer"
-            }
-        end
-    end
+        return {
+            redirect_to = "/customers/" .. customer.id
+        }
+    end)
 }))
 
 -- Customer edit route
@@ -106,18 +114,22 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
             }
         end
         self.customer = customer
+        self.csrf_token = csrf.generate_token(self)
         self.title = "Edit Customer"
         return {
             render = "customers-add-edit"
         }
     end,
 
-    POST = function(self)
+    POST = capture_errors(function(self)
         if not self.current_user then
             return {
                 redirect_to = "/"
             }
         end
+
+        csrf.assert_token(self)
+
         local customer = Customer:find(self.params.id)
         if not customer then
             return {
@@ -126,23 +138,32 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
             }
         end
 
-        local first_name = self.params.first_name
-        local middle_name = self.params.middle_name
-        local last_name = self.params.last_name
-        local suffix_name = self.params.suffix_name
-        local phone_number = self.params.phone_number
-        local email = self.params.email
-        local address1 = self.params.address1
-        local address2 = self.params.address2
-        local city = self.params.city
-        local state = self.params.state
-        local zip_code = self.params.zip_code
+        local first_name = tostring(self.params.first_name or "")
+        local middle_name = tostring(self.params.middle_name or "")
+        local last_name = tostring(self.params.last_name or "")
+        local suffix_name = tostring(self.params.suffix_name or "")
+        local phone_number = tostring(self.params.phone_number or "")
+        local email = tostring(self.params.email or "")
+        local address1 = tostring(self.params.address1 or "")
+        local address2 = tostring(self.params.address2 or "")
+        local city = tostring(self.params.city or "")
+        local state = tostring(self.params.state or "")
+        local zip_code = tostring(self.params.zip_code or "")
 
-        if not first_name or not last_name then
+        -- Validate required fields
+        if first_name == "" or last_name == "" then
+            self.error_message = "First name and last name are required"
+            self.csrf_token = csrf.generate_token(self)
+            self.title = "Edit Customer"
+            self.customer = customer
             return {
-                redirect_to = "/customers/" .. customer.id .. "/edit?error_message=All+fields+are+required"
+                status = 400,
+                render = "customers-add-edit"
             }
         end
+
+        -- Strip the phone number to digits only
+        phone_number = phone_number:gsub("%D", "")
 
         -- Update the customer
         customer:update({
@@ -158,10 +179,11 @@ app:match("edit_customer", "/customers/:id/edit", respond_to({
             state = state,
             zip_code = zip_code
         })
+
         return {
-            redirect_to = "/customers"
+            redirect_to = "/customers/" .. customer.id
         }
-    end
+    end)
 }))
 
 -- View customer route
@@ -179,7 +201,10 @@ app:match("view_customer", "/customers/:id", respond_to({
                 render = "404"
             }
         end
+        local vehicles = Vehicle:select("WHERE id IN (SELECT vehicle_id FROM customers_vehicles WHERE customer_id = ?)",
+            customer.id)
         self.customer = customer
+        self.vehicles = vehicles
         self.title = "Customer Details"
         return {
             render = "customers-show"

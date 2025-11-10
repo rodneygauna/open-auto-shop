@@ -30,6 +30,11 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/customers">Customers</a>
+            </li>
+          </ul>
           <ul class="navbar-nav ms-auto">
             <% if current_user then %>
               <% if current_user.is_admin == true then %>

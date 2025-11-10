@@ -1,0 +1,25 @@
+<h1 class="h4 mb-3"><%= "Settings" %></h1>
+
+<div class="row">
+  <div class="col">
+    <div class="card mb-4">
+      <div class="card-header">Business Information</div>
+      <div class="card-body">
+        <% if business then %>
+          <a href="/business/<%= business.id %>" class="btn btn-primary">View Business Details</a>
+          <a href="/business/<%= business.id %>/edit" class="btn btn-secondary">Edit Business Information</a>
+        <% else %>
+          <a href="/business/create" class="btn btn-primary">Add Business Information</a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card mb-4">
+      <div class="card-header">User Management</div>
+      <div class="card-body">
+        <a href="/users" class="btn btn-primary">Manage Users</a>
+      </div>
+    </div>
+  </div>
+</div>

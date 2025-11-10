@@ -27,6 +27,10 @@ app:include(Auth)
 local Business = require("controllers.business")
 app:include(Business)
 
+-- Include settings routes
+local Settings = require("controllers.settings")
+app:include(Settings)
+
 -- Define the index route
 app:match("index", "/", function(self)
     self.csrf_token = csrf.generate_token(self)

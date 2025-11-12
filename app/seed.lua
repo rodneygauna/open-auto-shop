@@ -81,9 +81,9 @@ function seed.create_business()
         address1 = "123 Main Street",
         address2 = "Suite 100",
         city = "Springfield",
-        state = "IL",
+        state = "IL", -- Using state code from data dictionary
         zip_code = "62701",
-        phone_number = "5555551234",
+        phone_number = "5555551234", -- Will be formatted as (555) 555-1234
         email = "info@quickfixauto.com",
         website = "https://quickfixauto.com"
     })
@@ -99,32 +99,32 @@ function seed.create_customers()
     local customers_data = {{
         first_name = "John",
         last_name = "Smith",
-        phone_number = "5551001001",
+        phone_number = "5551001001", -- Will be formatted as (555) 100-1001
         email = "john.smith@email.com",
         address1 = "456 Oak Avenue",
         city = "Springfield",
-        state = "IL",
+        state = "IL", -- Using state code from data dictionary
         zip_code = "62702"
     }, {
         first_name = "Sarah",
         middle_name = "Jane",
         last_name = "Johnson",
-        phone_number = "5551002002",
+        phone_number = "5551002002", -- Will be formatted as (555) 100-2002
         email = "sarah.johnson@email.com",
         address1 = "789 Elm Street",
         address2 = "Apt 4B",
         city = "Springfield",
-        state = "IL",
+        state = "IL", -- Using state code from data dictionary
         zip_code = "62703"
     }, {
         first_name = "Robert",
         last_name = "Williams",
         suffix_name = "Jr.",
-        phone_number = "5551003003",
+        phone_number = "5551003003", -- Will be formatted as (555) 100-3003
         email = "rob.williams@email.com",
         address1 = "321 Pine Road",
         city = "Springfield",
-        state = "IL",
+        state = "IL", -- Using state code from data dictionary
         zip_code = "62704"
     }}
 
@@ -143,32 +143,32 @@ function seed.create_vehicles(customers)
     print("\n🚗 Creating vehicles...")
 
     local vehicles_data = {{
-        make = "Toyota",
-        model = "Camry",
+        make = "Toyota", -- From data dictionary
+        model = "Camry", -- From data dictionary
         year = 2020,
         vin = "1HGBH41JXMN109186",
         license_plate = "ABC123",
         color = "Silver",
         customer_index = 1
     }, {
-        make = "Honda",
-        model = "Civic",
+        make = "Honda", -- From data dictionary
+        model = "Civic", -- From data dictionary
         year = 2019,
         vin = "2HGFG12878H123456",
         license_plate = "XYZ789",
         color = "Blue",
         customer_index = 2
     }, {
-        make = "Ford",
-        model = "F-150",
+        make = "Ford", -- From data dictionary
+        model = "F-150", -- From data dictionary
         year = 2021,
         vin = "1FTFW1E84MKE12345",
         license_plate = "DEF456",
         color = "Black",
         customer_index = 2
     }, {
-        make = "Chevrolet",
-        model = "Silverado",
+        make = "Chevrolet", -- From data dictionary
+        model = "Silverado 1500", -- From data dictionary
         year = 2018,
         vin = "1GCVKREC4JZ123456",
         license_plate = "GHI789",

@@ -1,10 +1,12 @@
 -- app/controllers/business.lua
 local lapis = require("lapis")
+local config = require("lapis.config").get()
 local bcrypt = require("bcrypt")
 local csrf = require("lapis.csrf")
 local respond_to = require("lapis.application").respond_to
 local capture_errors = require("lapis.application").capture_errors
 local Business = require("models.business")
+local validation = require("helpers.validation")
 
 -- Create a business controller
 local app = lapis.Application()
@@ -12,6 +14,10 @@ local app = lapis.Application()
 -- Business create route
 app:match("create_business", "/business/create", respond_to({
     GET = function(self)
+        local helpers = require("helpers.view_helpers")
+        local data = require("helpers.data_dictionaries")
+        self.helpers = helpers
+        self.data = data
         self.csrf_token = csrf.generate_token(self)
         self.title = "Create Business"
         self.error_message = self.params.error_message
@@ -35,30 +41,32 @@ app:match("create_business", "/business/create", respond_to({
 
         -- Validate required fields
         if name == "" then
-            self.error_message = "Business name is required"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "Create Business"
-            return {
-                status = 400,
-                render = "business/add-edit"
-            }
+            return
+                validation.validation_error(self, "Business name is required", "Create Business", "business/add-edit")
         end
 
         -- Strip the phone number to digits only
-        phone_number = phone_number:gsub("%D", "")
+        phone_number = validation.sanitize_phone(phone_number)
 
-        -- Create the business
-        local business = Business:create({
-            name = name,
-            address1 = address1,
-            address2 = address2,
-            city = city,
-            state = state,
-            zip_code = zip_code,
-            phone_number = phone_number,
-            email = email,
-            website = website
-        })
+        -- Create the business with error handling
+        local success, business = pcall(function()
+            return Business:create({
+                name = name,
+                address1 = address1,
+                address2 = address2,
+                city = city,
+                state = state,
+                zip_code = zip_code,
+                phone_number = phone_number,
+                email = email,
+                website = website
+            })
+        end)
+
+        if not success then
+            return
+                validation.validation_error(self, "Failed to create business", "Create Business", "business/add-edit")
+        end
 
         -- Redirect to business list or detail page
         return {
@@ -72,12 +80,18 @@ app:match("edit_business", "/business/:id/edit", respond_to({
     GET = function(self)
         local business = Business:find(self.params.id)
         if not business then
+            self.title = "404 - Not Found"
+            self.error_message = "Business not found"
             return {
                 status = 404,
-                render = "404"
+                render = "errors/404"
             }
         end
 
+        local helpers = require("helpers.view_helpers")
+        local data = require("helpers.data_dictionaries")
+        self.helpers = helpers
+        self.data = data
         self.business = business
         self.csrf_token = csrf.generate_token(self)
         self.title = "Edit Business"
@@ -91,9 +105,11 @@ app:match("edit_business", "/business/:id/edit", respond_to({
 
         local business = Business:find(self.params.id)
         if not business then
+            self.title = "404 - Not Found"
+            self.error_message = "Business not found"
             return {
                 status = 404,
-                render = "404"
+                render = "errors/404"
             }
         end
 
@@ -109,31 +125,32 @@ app:match("edit_business", "/business/:id/edit", respond_to({
 
         -- Validate required fields
         if name == "" then
-            self.error_message = "Business name is required"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "Edit Business"
             self.business = business
-            return {
-                status = 400,
-                render = "business/add-edit"
-            }
+            return validation.validation_error(self, "Business name is required", "Edit Business", "business/add-edit")
         end
 
         -- Strip the phone number to digits only
-        phone_number = phone_number:gsub("%D", "")
+        phone_number = validation.sanitize_phone(phone_number)
 
-        -- Update the business
-        business:update({
-            name = name,
-            address1 = address1,
-            address2 = address2,
-            city = city,
-            state = state,
-            zip_code = zip_code,
-            phone_number = phone_number,
-            email = email,
-            website = website
-        })
+        -- Update the business with error handling
+        local success, err = pcall(function()
+            business:update({
+                name = name,
+                address1 = address1,
+                address2 = address2,
+                city = city,
+                state = state,
+                zip_code = zip_code,
+                phone_number = phone_number,
+                email = email,
+                website = website
+            })
+        end)
+
+        if not success then
+            self.business = business
+            return validation.validation_error(self, "Failed to update business", "Edit Business", "business/add-edit")
+        end
 
         -- Redirect to business detail page
         return {
@@ -147,12 +164,18 @@ app:match("business_detail", "/business/:id", respond_to({
     GET = function(self)
         local business = Business:find(self.params.id)
         if not business then
+            self.title = "404 - Not Found"
+            self.error_message = "Business not found"
             return {
                 status = 404,
-                render = "404"
+                render = "errors/404"
             }
         end
 
+        local helpers = require("helpers.view_helpers")
+        local data = require("helpers.data_dictionaries")
+        self.helpers = helpers
+        self.data = data
         self.business = business
         self.title = business.name
         return {

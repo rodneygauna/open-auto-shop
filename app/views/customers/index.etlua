@@ -37,3 +37,66 @@
     <% end %>
   </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<% if total_pages > 1 then %>
+  <nav aria-label="Customer pagination">
+    <ul class="pagination justify-content-center">
+      <!-- Previous Button -->
+      <li class="page-item <%= current_page == 1 and 'disabled' or '' %>">
+        <a class="page-link" href="<%= url_for('customers') .. '?page=' .. (current_page - 1) %>"
+           aria-label="Previous" <%= current_page == 1 and 'tabindex="-1" aria-disabled="true"' or '' %>>
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+
+      <!-- Page Numbers -->
+      <%
+        local start_page = math.max(1, current_page - 2)
+        local end_page = math.min(total_pages, current_page + 2)
+      %>
+
+      <% if start_page > 1 then %>
+        <li class="page-item">
+          <a class="page-link" href="<%= url_for('customers') .. '?page=1' %>">1</a>
+        </li>
+        <% if start_page > 2 then %>
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        <% end %>
+      <% end %>
+
+      <% for i = start_page, end_page do %>
+        <li class="page-item <%= i == current_page and 'active' or '' %>">
+          <a class="page-link" href="<%= url_for('customers') .. '?page=' .. i %>"><%= i %></a>
+        </li>
+      <% end %>
+
+      <% if end_page < total_pages then %>
+        <% if end_page < total_pages - 1 then %>
+          <li class="page-item disabled">
+            <span class="page-link">...</span>
+          </li>
+        <% end %>
+        <li class="page-item">
+          <a class="page-link" href="<%= url_for('customers') .. '?page=' .. total_pages %>"><%= total_pages %></a>
+        </li>
+      <% end %>
+
+      <!-- Next Button -->
+      <li class="page-item <%= current_page == total_pages and 'disabled' or '' %>">
+        <a class="page-link" href="<%= url_for('customers') .. '?page=' .. (current_page + 1) %>"
+           aria-label="Next" <%= current_page == total_pages and 'tabindex="-1" aria-disabled="true"' or '' %>>
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Pagination Info -->
+    <p class="text-center text-muted">
+      Showing <%= (#customers > 0) and ((current_page - 1) * per_page + 1) or 0 %> to
+      <%= math.min(current_page * per_page, total_count) %> of <%= total_count %> customers
+    </p>
+  </nav>
+<% end %>

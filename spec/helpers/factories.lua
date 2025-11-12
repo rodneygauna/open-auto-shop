@@ -1,6 +1,7 @@
 -- spec/helpers/factories.lua
 -- Factory functions for creating test data
 local bcrypt = require("bcrypt")
+local config = require("lapis.config").get()
 local User = require("models.user")
 
 local factories = {}
@@ -26,7 +27,7 @@ function factories.create_user(attrs)
 
     local user_data = {
         email = attrs.email or string.format("user%d@example.com", count),
-        password_hash = attrs.password_hash or bcrypt.digest(attrs.password or "password123", 12),
+        password_hash = attrs.password_hash or bcrypt.digest(attrs.password or "password123", config.bcrypt_rounds),
         first_name = attrs.first_name or "Test",
         last_name = attrs.last_name or string.format("User%d", count),
         middle_name = attrs.middle_name,

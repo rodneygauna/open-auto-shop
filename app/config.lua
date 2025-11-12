@@ -8,6 +8,13 @@ local pg_pass = os.getenv("POSTGRES_PASSWORD")
 local pg_db = os.getenv("POSTGRES_DB")
 local secret_key = os.getenv("LAPIS_SECRET_KEY") or "please-change-me"
 
+-- Security constants
+local BCRYPT_ROUNDS = tonumber(os.getenv("BCRYPT_ROUNDS")) or 12
+local BUSINESS_ID = 1 -- Only one business per instance
+
+-- Pagination constants
+local ITEMS_PER_PAGE = tonumber(os.getenv("ITEMS_PER_PAGE")) or 20
+
 -- Validate that PostgreSQL environment variables are set
 if not (pg_host and pg_user and pg_pass and pg_db) then
     error(
@@ -27,6 +34,9 @@ config("development", {
     port = 8080,
     session_name = "autoshop_session_dev",
     secret = secret_key,
+    bcrypt_rounds = BCRYPT_ROUNDS,
+    business_id = BUSINESS_ID,
+    items_per_page = ITEMS_PER_PAGE,
     postgres = {
         host = pg_host,
         user = pg_user,
@@ -43,6 +53,9 @@ config("production", {
     port = 8080,
     session_name = "autoshop_session_prod",
     secret = secret_key,
+    bcrypt_rounds = BCRYPT_ROUNDS,
+    business_id = BUSINESS_ID,
+    items_per_page = ITEMS_PER_PAGE,
     postgres = {
         host = pg_host,
         user = pg_user,
@@ -59,6 +72,9 @@ config("test", {
     port = 8080,
     session_name = "autoshop_session_test",
     secret = "test-secret-key-do-not-use-in-production",
+    bcrypt_rounds = 4, -- Lower rounds for faster tests
+    business_id = BUSINESS_ID,
+    items_per_page = ITEMS_PER_PAGE,
     postgres = {
         host = pg_host or "127.0.0.1",
         user = pg_user or "postgres",

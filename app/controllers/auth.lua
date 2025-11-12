@@ -6,6 +6,8 @@ local respond_to = require("lapis.application").respond_to
 local capture_errors = require("lapis.application").capture_errors
 local User = require("models.user")
 local config = require("lapis.config").get()
+local validation = require("helpers.validation")
+local logger = require("helpers.logger")
 
 -- Create an authentication controller
 local app = lapis.Application()
@@ -31,57 +33,33 @@ app:match("register", "/register", respond_to({
         local confirm_password = self.params.confirm_password or ""
         local first_name = tostring(self.params.first_name or "")
         local last_name = tostring(self.params.last_name or "")
-        local phone_number = tostring(self.params.phone or "")
+        local phone_number = validation.sanitize_phone(self.params.phone)
         local title = tostring(self.params.title or "")
         local is_admin
 
         -- Validate required fields
         if email == "" or password == "" then
-            self.error_message = "Email and password are required"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "User Registration"
-            return {
-                status = 400,
-                render = "auth/register"
-            }
+            return validation.validation_error(self, "Email and password are required", "User Registration",
+                "auth/register")
         end
 
         -- Validate name fields
         if first_name == "" or last_name == "" then
-            self.error_message = "First name and last name are required"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "User Registration"
-            return {
-                status = 400,
-                render = "auth/register"
-            }
+            return validation.validation_error(self, "First name and last name are required", "User Registration",
+                "auth/register")
         end
-
-        -- Strip the phone number to digits only
-        phone_number = phone_number:gsub("%D", "")
 
         -- Check password confirmation
         if password ~= confirm_password then
-            self.error_message = "Passwords do not match"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "User Registration"
-            return {
-                status = 400,
-                render = "auth/register"
-            }
+            return validation.validation_error(self, "Passwords do not match", "User Registration", "auth/register")
         end
 
         -- Check if user already exists
         if User:find({
             email = email
         }) then
-            self.error_message = "An account with this email already exists"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "User Registration"
-            return {
-                status = 400,
-                render = "auth/register"
-            }
+            return validation.validation_error(self, "An account with this email already exists", "User Registration",
+                "auth/register")
         end
 
         -- Check if this is the first user and make them an admin
@@ -92,16 +70,33 @@ app:match("register", "/register", respond_to({
             is_admin = false
         end
 
-        -- Create new user
-        local hash = bcrypt.digest(password, 12)
-        local user = User:create({
-            email = email,
-            password_hash = hash,
-            first_name = first_name,
-            last_name = last_name,
-            phone_number = phone_number,
-            title = title,
-            is_admin = is_admin
+        -- Create new user with error handling
+        local hash = bcrypt.digest(password, config.bcrypt_rounds)
+        local success, user = pcall(function()
+            return User:create({
+                email = email,
+                password_hash = hash,
+                first_name = first_name,
+                last_name = last_name,
+                phone_number = phone_number,
+                title = title,
+                is_admin = is_admin
+            })
+        end)
+
+        if not success then
+            logger.error("User registration failed", {
+                email = email
+            })
+            return validation.validation_error(self, "Failed to create user account", "User Registration",
+                "auth/register")
+        end
+
+        -- Log the registration
+        logger.auth("User registered", {
+            user_id = user.id,
+            email = user.email,
+            is_admin = user.is_admin
         })
 
         -- Log user in
@@ -134,13 +129,7 @@ app:match("login", "/login", respond_to({
 
         -- Validate required fields
         if email == "" or password == "" then
-            self.error_message = "Email and password are required"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "Login"
-            return {
-                status = 400,
-                render = "auth/login"
-            }
+            return validation.validation_error(self, "Email and password are required", "Login", "auth/login")
         end
 
         -- Find user and verify password
@@ -148,14 +137,17 @@ app:match("login", "/login", respond_to({
             email = email
         })
         if not (user and bcrypt.verify(password, user.password_hash)) then
-            self.error_message = "Invalid email or password"
-            self.csrf_token = csrf.generate_token(self)
-            self.title = "Login"
-            return {
-                status = 400,
-                render = "auth/login"
-            }
+            logger.warn("Failed login attempt", {
+                email = email
+            })
+            return validation.validation_error(self, "Invalid email or password", "Login", "auth/login")
         end
+
+        -- Log successful login
+        logger.auth("User logged in", {
+            user_id = user.id,
+            email = user.email
+        })
 
         -- Log user in
         self.session.current_user_id = user.id
@@ -172,6 +164,15 @@ app:match("logout", "/logout", function(self)
         if config._name ~= "test" then
             csrf.assert_token(self)
         end
+
+        -- Log logout before clearing session
+        if self.current_user then
+            logger.auth("User logged out", {
+                user_id = self.current_user.id,
+                email = self.current_user.email
+            })
+        end
+
         self.session.current_user_id = nil
     end
     return {

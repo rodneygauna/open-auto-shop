@@ -22,6 +22,8 @@ app:before_filter(function(self)
     -- Make helpers and data dictionaries available to all views
     self.helpers = helpers
     self.data = data
+    -- Generate CSRF token for all routes (needed for logout form in layout)
+    self.csrf_token = csrf.generate_token(self)
 end)
 
 -- Include auth routes
@@ -36,13 +38,13 @@ app:include(Business)
 local Settings = require("controllers.settings")
 app:include(Settings)
 
--- Include customers routes
-local Customers = require("controllers.customers")
-app:include(Customers)
-
 -- Include vehicles routes
 local Vehicles = require("controllers.vehicles")
 app:include(Vehicles)
+
+-- Include customers routes
+local Customers = require("controllers.customers")
+app:include(Customers)
 
 -- Define the index route
 app:match("index", "/", function(self)

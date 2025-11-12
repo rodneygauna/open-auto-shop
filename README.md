@@ -99,9 +99,3 @@ scripts/
 spec/               # Test files
 └── helpers/        # Test helper functions
 ```
-
-## Documentation
-
-- `TESTING.md` - Testing guide and best practices
-- `VIEWS_STRUCTURE.md` - View organization conventions
-- `DOCKER_TESTING_FIXES.md` - Docker-specific testing setup

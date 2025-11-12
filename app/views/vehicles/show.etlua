@@ -1,0 +1,42 @@
+<h1 class="h4 mb-3">Vehicle Details</h1>
+<div class="mt-4">
+  <a href="/vehicles/<%= vehicle.id %>/edit" class="btn btn-secondary">Edit Vehicle</a>
+  <% if customer then %>
+    <a href="/customers/<%= customer.id %>" class="btn btn-primary">Back to Customer</a>
+  <% else %>
+    <a href="/customers" class="btn btn-primary">Back to Customers</a>
+  <% end %>
+</div>
+
+<h2 class="h5 mt-4">Vehicle Information</h2>
+<p>
+  <strong>Make:</strong> <%= vehicle.make %><br />
+  <strong>Model:</strong> <%= vehicle.model %><br />
+  <strong>Year:</strong> <%= vehicle.year %><br />
+  <% if vehicle.color and vehicle.color ~= "" then %>
+    <strong>Color:</strong> <%= vehicle.color %><br />
+  <% end %>
+</p>
+
+<h2 class="h5 mt-4">Identification</h2>
+<p>
+  <% if vehicle.vin and vehicle.vin ~= "" then %>
+    <strong>VIN:</strong> <%= vehicle.vin %><br />
+  <% end %>
+  <% if vehicle.license_plate and vehicle.license_plate ~= "" then %>
+    <strong>License Plate:</strong> <%= vehicle.license_plate %><br />
+  <% end %>
+</p>
+
+<% if customer then %>
+  <h2 class="h5 mt-4">Owner</h2>
+  <p>
+    <strong>Name:</strong> <%= helpers.format_name(customer.first_name, customer.middle_name, customer.last_name, customer.suffix_name) %><br />
+    <% if customer.phone_number and customer.phone_number ~= "" then %>
+      <strong>Phone:</strong> <%= helpers.format_phone(customer.phone_number) %><br />
+    <% end %>
+    <% if customer.email and customer.email ~= "" then %>
+      <strong>Email:</strong> <%= customer.email %><br />
+    <% end %>
+  </p>
+<% end %>

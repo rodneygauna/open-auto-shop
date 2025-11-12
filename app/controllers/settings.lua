@@ -12,17 +12,18 @@ local app = lapis.Application()
 -- Settings route
 app:match("settings", "/settings", respond_to({
     GET = function(self)
+        if not self.current_user then
+            return {
+                redirect_to = "/"
+            }
+        end
+
         -- Total user counts
         local user_count = User:count()
         self.user_count = user_count
         local business = Business:find(1)
         if business then
             self.business = business
-        end
-        if not self.current_user then
-            return {
-                redirect_to = app:url_for("index")
-            }
         end
         self.csrf_token = csrf.generate_token(self)
         self.title = "User Settings"

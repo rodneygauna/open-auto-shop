@@ -196,4 +196,37 @@ app:match("edit_vehicle", "/vehicles/:id/edit", respond_to({
     end)
 }))
 
+-- View a vehicle
+app:match("show_vehicle", "/vehicles/:id", function(self)
+    if not self.current_user then
+        return {
+            redirect_to = "/"
+        }
+    end
+
+    local vehicle = Vehicle:find(self.params.id)
+    if not vehicle then
+        return {
+            status = 404,
+            "Vehicle not found"
+        }
+    end
+
+    -- Get the customer associated with this vehicle
+    local cv = CustomersVehicles:find({
+        vehicle_id = vehicle.id
+    })
+    local customer = nil
+    if cv then
+        customer = Customer:find(cv.customer_id)
+    end
+
+    self.vehicle = vehicle
+    self.customer = customer
+    self.title = vehicle.year .. " " .. vehicle.make .. " " .. vehicle.model
+    return {
+        render = "vehicles/show"
+    }
+end)
+
 return app

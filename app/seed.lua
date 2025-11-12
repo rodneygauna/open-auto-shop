@@ -27,12 +27,12 @@ function seed.clear_data()
     -- Order matters due to foreign key constraints
     local db = require("lapis.db")
     db.query("TRUNCATE TABLE customers_vehicles CASCADE")
-    db.query("TRUNCATE TABLE vehicles CASCADE")
-    db.query("TRUNCATE TABLE customers CASCADE")
-    db.query("TRUNCATE TABLE business_info CASCADE")
-    db.query("TRUNCATE TABLE users CASCADE")
+    db.query("TRUNCATE TABLE vehicles RESTART IDENTITY CASCADE")
+    db.query("TRUNCATE TABLE customers RESTART IDENTITY CASCADE")
+    db.query("TRUNCATE TABLE business_info RESTART IDENTITY CASCADE")
+    db.query("TRUNCATE TABLE users RESTART IDENTITY CASCADE")
 
-    print("✓ Data cleared")
+    print("✓ Data cleared and sequences reset")
 end
 
 -- Seed users

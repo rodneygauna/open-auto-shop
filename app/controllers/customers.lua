@@ -19,6 +19,15 @@ app:match("customers", "/customers", respond_to({
         end
         -- Fetch all customers
         local customers = Customer:select()
+
+        -- Get vehicle count for each customer
+        local db = require("lapis.db")
+        for _, customer in ipairs(customers) do
+            local result = db.query("SELECT COUNT(*) as count FROM customers_vehicles WHERE customer_id = ?",
+                customer.id)
+            customer.vehicle_count = result[1].count
+        end
+
         self.customers = customers
         self.title = "Customers"
         return {

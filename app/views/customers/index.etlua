@@ -10,13 +10,14 @@
       <th scope="col">Name</th>
       <th scope="col">Email</th>
       <th scope="col">Phone</th>
+      <th scope="col">Vehicles</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
     <% if #customers == 0 then %>
       <tr>
-        <td colspan="5" class="text-center">No customers found.</td>
+        <td colspan="6" class="text-center">No customers found.</td>
       </tr>
     <% end %>
     <% for _, customer in ipairs(customers) do %>
@@ -25,6 +26,7 @@
         <td><%= customer.first_name %> <%= customer.last_name %></td>
         <td><%= customer.email %></td>
         <td><%= helpers.format_phone(customer.phone_number) %></td>
+        <td><%= customer.vehicle_count or 0 %></td>
         <td>
           <div class="btn-group" role="group" aria-label="Actions">
             <a href="/customers/<%= customer.id %>" class="btn btn-sm btn-primary text-white">View</a>

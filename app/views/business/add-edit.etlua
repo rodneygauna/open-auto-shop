@@ -51,14 +51,19 @@
 
   <div class="mb-3">
     <label for="state" class="form-label">State</label>
-    <input
-      type="text"
-      class="form-control"
+    <select
+      class="form-select"
       id="state"
       name="state"
-      value="<%= business and business.state or "" %>"
       required
-    />
+    >
+      <option value="">Select a state...</option>
+      <% for _, state in ipairs(data.states) do %>
+        <option value="<%= state.code %>" <%= (business and business.state == state.code) and "selected" or "" %>>
+          <%= state.name %>
+        </option>
+      <% end %>
+    </select>
   </div>
 
   <div class="mb-3">

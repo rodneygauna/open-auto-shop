@@ -24,16 +24,7 @@
         <th scope="row"><%= customer.id %></th>
         <td><%= customer.first_name %> <%= customer.last_name %></td>
         <td><%= customer.email %></td>
-        <td>
-          <% if customer.phone_number and customer.phone_number ~= "" then %>
-            <% local phone = customer.phone_number %>
-            <% if #phone == 10 then %>
-              (<%= phone:sub(1,3) %>) <%= phone:sub(4,6) %>-<%= phone:sub(7,10) %>
-            <% else %>
-              <%= phone %>
-            <% end %>
-          <% end %>
-        </td>
+        <td><%= helpers.format_phone(customer.phone_number) %></td>
         <td>
           <div class="btn-group" role="group" aria-label="Actions">
             <a href="/customers/<%= customer.id %>" class="btn btn-sm btn-primary text-white">View</a>

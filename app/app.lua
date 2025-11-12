@@ -2,6 +2,8 @@
 local lapis = require("lapis")
 local csrf = require("lapis.csrf")
 local User = require("models.user")
+local helpers = require("helpers.view_helpers")
+local data = require("helpers.data_dictionaries")
 
 -- Create the main application
 local app = lapis.Application()
@@ -12,11 +14,14 @@ app:enable("etlua")
 -- Set the layout
 app.layout = "layout"
 
--- Before filter to load current user
+-- Before filter to load current user and helpers
 app:before_filter(function(self)
     if self.session.current_user_id then
         self.current_user = User:find(self.session.current_user_id)
     end
+    -- Make helpers and data dictionaries available to all views
+    self.helpers = helpers
+    self.data = data
 end)
 
 -- Include auth routes

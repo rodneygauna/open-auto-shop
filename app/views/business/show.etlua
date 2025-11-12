@@ -5,17 +5,13 @@
 
 <h2 class="h5 mt-4">Address</h2>
 <p>
-  <%= business.address1 %><br />
-  <% if business.address2 and business.address2 ~= "" then %>
-    <%= business.address2 %><br />
-  <% end %>
-  <%= business.city %>, <%= business.state %> <%= business.zip_code %>
+  <%- helpers.format_address(business.address1, business.address2, business.city, business.state, business.zip_code) %>
 </p>
 
 <h2 class="h5 mt-4">Contact Information</h2>
 <p>
   <% if business.phone_number and business.phone_number ~= "" then %>
-    Phone: <%= business.phone_number %><br />
+    Phone: <%= helpers.format_phone(business.phone_number) %><br />
   <% end %>
   <% if business.email and business.email ~= "" then %>
     Email: <%= business.email %><br />

@@ -14,24 +14,52 @@
 
   <div class="mb-4">
     <label for="make" class="block text-gray-700">Make</label>
+    <select
+      id="make-select"
+      class="w-full px-3 py-2 border rounded"
+    >
+      <option value="">Select a make...</option>
+      <%
+        local vehicleMakeInList = false
+        for _, make in ipairs(data.vehicle_makes) do
+          if vehicle and vehicle.make == make then
+            vehicleMakeInList = true
+          end
+      %>
+        <option value="<%= make %>" <%= (vehicle and vehicle.make == make) and "selected" or "" %>>
+          <%= make %>
+        </option>
+      <% end %>
+      <option value="Other" <%= (vehicle and not vehicleMakeInList and vehicle.make) and "selected" or "" %>>Other (Not Listed)</option>
+    </select>
     <input
       type="text"
-      id="make"
-      name="make"
-      class="w-full px-3 py-2 border rounded"
-      required
+      id="make-custom"
+      class="w-full px-3 py-2 border rounded mt-2"
+      placeholder="Enter custom make..."
+      style="display: none;"
+      value="<%= (vehicle and not vehicleMakeInList and vehicle.make) and vehicle.make or "" %>"
     />
+    <input type="hidden" id="make-hidden" name="make" value="<%= vehicle and vehicle.make or "" %>" />
   </div>
 
   <div class="mb-4">
     <label for="model" class="block text-gray-700">Model</label>
+    <select
+      id="model-select"
+      class="w-full px-3 py-2 border rounded"
+    >
+      <option value="">Select a make first...</option>
+    </select>
     <input
       type="text"
-      id="model"
-      name="model"
-      class="w-full px-3 py-2 border rounded"
-      required
+      id="model-custom"
+      class="w-full px-3 py-2 border rounded mt-2"
+      placeholder="Enter custom model..."
+      style="display: none;"
+      value="<%= vehicle and vehicle.model or "" %>"
     />
+    <input type="hidden" id="model-hidden" name="model" value="<%= vehicle and vehicle.model or "" %>" />
   </div>
 
   <div class="mb-4">
@@ -41,6 +69,7 @@
       id="year"
       name="year"
       class="w-full px-3 py-2 border rounded"
+      value="<%= vehicle and vehicle.year or "" %>"
       required
     />
   </div>
@@ -52,6 +81,7 @@
       id="vin"
       name="vin"
       class="w-full px-3 py-2 border rounded"
+      value="<%= vehicle and vehicle.vin or "" %>"
     />
   </div>
 
@@ -62,6 +92,7 @@
       id="license_plate"
       name="license_plate"
       class="w-full px-3 py-2 border rounded"
+      value="<%= vehicle and vehicle.license_plate or "" %>"
     />
   </div>
 
@@ -72,7 +103,178 @@
       id="color"
       name="color"
       class="w-full px-3 py-2 border rounded"
+      value="<%= vehicle and vehicle.color or "" %>"
     />
   </div>
 
-  <button type="submit" class="btn btn-primary">Add Vehicle</button>
+  <button type="submit" class="btn btn-primary"><%= vehicle and "Update Vehicle" or "Add Vehicle" %></button>
+</form>
+
+<script>
+  // Vehicle makes and models data
+  const vehicleModels = {
+    <% for make, models in pairs(data.vehicle_models) do %>
+      "<%= make %>": [
+        <% for i, model in ipairs(models) do %>
+          "<%= model %>"<%= i < #models and "," or "" %>
+        <% end %>
+      ],
+    <% end %>
+  };
+
+  const makeSelect = document.getElementById('make-select');
+  const makeCustom = document.getElementById('make-custom');
+  const makeHidden = document.getElementById('make-hidden');
+
+  const modelSelect = document.getElementById('model-select');
+  const modelCustom = document.getElementById('model-custom');
+  const modelHidden = document.getElementById('model-hidden');
+
+  const currentModel = '<%= vehicle and vehicle.model or "" %>';
+
+  // Handle make selection changes
+  makeSelect.addEventListener('change', function() {
+    const selectedMake = makeSelect.value;
+
+    if (selectedMake === 'Other') {
+      // Show custom make input
+      makeCustom.style.display = 'block';
+      makeCustom.required = true;
+      makeSelect.required = false;
+      makeCustom.focus();
+
+      // Clear and disable model dropdown
+      modelSelect.innerHTML = '<option value="">Enter custom make first...</option>';
+      modelSelect.disabled = true;
+      modelSelect.style.display = 'block';
+      modelCustom.style.display = 'none';
+      modelCustom.required = false;
+    } else if (selectedMake === '') {
+      // No make selected
+      makeCustom.style.display = 'none';
+      makeCustom.required = false;
+      makeSelect.required = true;
+
+      modelSelect.innerHTML = '<option value="">Select a make first...</option>';
+      modelSelect.disabled = true;
+      modelSelect.style.display = 'block';
+      modelCustom.style.display = 'none';
+      modelCustom.required = false;
+    } else {
+      // Standard make selected
+      makeCustom.style.display = 'none';
+      makeCustom.required = false;
+      makeSelect.required = true;
+      makeHidden.value = selectedMake;
+
+      updateModels(selectedMake);
+    }
+  });
+
+  // Handle custom make input
+  makeCustom.addEventListener('input', function() {
+    makeHidden.value = makeCustom.value;
+
+    // Enable custom model input
+    modelSelect.style.display = 'none';
+    modelCustom.style.display = 'block';
+    modelCustom.required = true;
+    modelSelect.required = false;
+  });
+
+  // Handle model selection changes
+  modelSelect.addEventListener('change', function() {
+    const selectedModel = modelSelect.value;
+
+    if (selectedModel === 'Other') {
+      // Show custom model input
+      modelSelect.style.display = 'none';
+      modelCustom.style.display = 'block';
+      modelCustom.required = true;
+      modelSelect.required = false;
+      modelCustom.focus();
+    } else {
+      modelHidden.value = selectedModel;
+    }
+  });
+
+  // Handle custom model input
+  modelCustom.addEventListener('input', function() {
+    modelHidden.value = modelCustom.value;
+  });
+
+  // Function to populate model dropdown based on selected make
+  function updateModels(selectedMake) {
+    // Clear existing options
+    modelSelect.innerHTML = '<option value="">Select a model...</option>';
+
+    // Enable model dropdown
+    modelSelect.disabled = false;
+    modelSelect.style.display = 'block';
+    modelCustom.style.display = 'none';
+    modelCustom.required = false;
+    modelSelect.required = true;
+
+    // Get models for selected make
+    const models = vehicleModels[selectedMake] || [];
+
+    let modelFound = false;
+
+    // Add model options
+    models.forEach(model => {
+      const option = document.createElement('option');
+      option.value = model;
+      option.textContent = model;
+
+      // Select current model if editing and matches
+      if (model === currentModel) {
+        option.selected = true;
+        modelHidden.value = model;
+        modelFound = true;
+      }
+
+      modelSelect.appendChild(option);
+    });
+
+    // Add "Other" option for custom models
+    const otherOption = document.createElement('option');
+    otherOption.value = 'Other';
+    otherOption.textContent = 'Other (Not Listed)';
+
+    // If current model not found in list, select "Other" and show custom input
+    if (currentModel && !modelFound) {
+      otherOption.selected = true;
+      modelSelect.style.display = 'none';
+      modelCustom.style.display = 'block';
+      modelCustom.required = true;
+      modelSelect.required = false;
+      modelHidden.value = currentModel;
+    }
+
+    modelSelect.appendChild(otherOption);
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const initialMake = makeSelect.value;
+    const currentMakeValue = '<%= vehicle and vehicle.make or "" %>';
+    const currentModelValue = '<%= vehicle and vehicle.model or "" %>';
+
+    if (initialMake && initialMake !== 'Other') {
+      // Standard make selected from dropdown
+      updateModels(initialMake);
+    } else if (initialMake === 'Other') {
+      // "Other" selected - show custom inputs
+      makeCustom.style.display = 'block';
+      makeCustom.required = true;
+      makeSelect.required = false;
+      makeHidden.value = currentMakeValue;
+
+      modelSelect.style.display = 'none';
+      modelCustom.style.display = 'block';
+      modelCustom.required = true;
+      modelSelect.required = false;
+      modelHidden.value = currentModelValue;
+    }
+  });
+</script>

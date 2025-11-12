@@ -96,4 +96,98 @@ app:match("create_vehicle", "/vehicles/create", respond_to({
     end)
 }))
 
+-- Edit a vehicle
+app:match("edit_vehicle", "/vehicles/:id/edit", respond_to({
+    GET = function(self)
+        if not self.current_user then
+            return {
+                redirect_to = "/"
+            }
+        end
+
+        local vehicle = Vehicle:find(self.params.id)
+        if not vehicle then
+            return {
+                status = 404,
+                "Vehicle not found"
+            }
+        end
+
+        -- Get list of customers for the dropdown
+        local customers = Customer:select()
+        self.customers = customers
+        self.vehicle = vehicle
+        self.csrf_token = csrf.generate_token(self)
+        self.title = "Edit Vehicle"
+        return {
+            render = "vehicles/add-edit"
+        }
+    end,
+
+    POST = capture_errors(function(self)
+        if not self.current_user then
+            return {
+                redirect_to = "/"
+            }
+        end
+
+        csrf.assert_token(self)
+
+        local vehicle = Vehicle:find(self.params.id)
+        if not vehicle then
+            return {
+                status = 404,
+                "Vehicle not found"
+            }
+        end
+
+        local make = tostring(self.params.make or "")
+        local model = tostring(self.params.model or "")
+        local year = tonumber(self.params.year)
+        local vin = tostring(self.params.vin or "")
+        local license_plate = tostring(self.params.license_plate or "")
+        local color = tostring(self.params.color or "")
+
+        -- Validate required fields
+        if make == "" or model == "" or not year then
+            local customers = Customer:select()
+            self.customers = customers
+            self.vehicle = vehicle
+            self.error_message = "Make, model, and year are required"
+            self.csrf_token = csrf.generate_token(self)
+            self.title = "Edit Vehicle"
+            return {
+                status = 400,
+                render = "vehicles/add-edit"
+            }
+        end
+
+        -- Update the vehicle
+        vehicle:update({
+            make = make,
+            model = model,
+            year = year,
+            vin = vin,
+            license_plate = license_plate,
+            color = color
+        })
+
+        -- Get the customer_id from CustomersVehicles to redirect back
+        local cv = CustomersVehicles:find({
+            vehicle_id = vehicle.id
+        })
+        local customer_id = cv and cv.customer_id or nil
+
+        if customer_id then
+            return {
+                redirect_to = "/customers/" .. customer_id
+            }
+        else
+            return {
+                redirect_to = "/customers"
+            }
+        end
+    end)
+}))
+
 return app

@@ -22,6 +22,12 @@ app:match("create_vehicle", "/vehicles/create", respond_to({
         -- Get list of customers for the dropdown
         local customers = Customer:select()
         self.customers = customers
+
+        -- Check if customer_id is passed in query string
+        if self.params.customer_id then
+            self.preselected_customer_id = tonumber(self.params.customer_id)
+        end
+
         self.csrf_token = csrf.generate_token(self)
         self.title = "Create Vehicle"
         self.error_message = self.params.error_message

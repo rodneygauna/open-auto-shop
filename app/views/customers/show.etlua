@@ -26,6 +26,7 @@
 
 <!-- Vehicles Section -->
 <h2 class="h5 mt-4">Vehicles</h2>
+<a href="/vehicles/create?customer_id=<%= customer.id %>" class="btn btn-success mb-3">Add Vehicle</a>
 <table class="table table-striped">
   <thead>
     <tr>
